@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}考评任务{% endblock %}
+{% block content %}
+<h1>我的考评任务</h1>
+<div class="card">
+{% if tasks %}
+<table>
+  <tr><th>预约号</th><th>工种</th><th>考试时间</th><th>工位</th><th>考生</th>
+      <th>状态</th><th>总分</th><th>操作</th></tr>
+  {% for t in tasks %}
+  <tr>
+    <td>{{ t['booking_no'] }}</td>
+    <td>{{ t['skill_name'] }}</td>
+    <td>{{ t['exam_date'] }} {{ t['start_time'] }}-{{ t['end_time'] }}</td>
+    <td>{{ t['ws_name'] }}</td>
+    <td>{{ t['candidate_name'] }}</td>
+    <td><span class="badge badge-{{ t['status'] }}">
+        {{ {'booked':'待评分','completed':'已评分'}[t['status']] }}</span></td>
+    <td>{{ '%g'|format(t['total_score']) if t['total_score'] is not none else '—' }}
+        {% if t['published'] %}<span class="muted">(已发布)</span>{% endif %}</td>
+    <td><a class="btn btn-sm"
+           href="{{ url_for('examiner.score', booking_id=t['id']) }}">
+           {{ '修改评分' if t['status'] == 'completed' else '现场评分' }}</a></td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p class="muted">暂无分配的考评任务。</p>
+{% endif %}
+</div>
+{% endblock %}

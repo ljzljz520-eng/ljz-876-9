@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="hero card">
+  <h1>职业技能实操预约评分系统</h1>
+  <p>支持工种：电焊 · 烹饪 · 汽修 · 美容<br>
+     在线预约实操考试，系统自动安排工位、耗材与考评员；<br>
+     现场按操作步骤、成品质量、安全行为评分，考后发布成绩。</p>
+  <a class="btn" href="{{ url_for('auth.login') }}">登 录</a>
+  <a class="btn btn-success" href="{{ url_for('auth.register') }}">考生注册</a>
+</div>
+{% endblock %}

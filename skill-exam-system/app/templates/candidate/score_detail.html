@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}成绩明细{% endblock %}
+{% block content %}
+<h1>成绩明细</h1>
+<div class="card">
+  <p><b>预约号：</b>{{ b['booking_no'] }}　<b>工种：</b>{{ b['skill_name'] }}　
+     <b>考试时间：</b>{{ b['exam_date'] }} {{ b['start_time'] }}　
+     <b>工位：</b>{{ b['ws_name'] }}　<b>考评员：</b>{{ b['examiner_name'] }}</p>
+</div>
+<div class="card">
+<table>
+  <tr><th>类别</th><th>评分项目</th><th>满分</th><th>得分</th><th>评语</th></tr>
+  {% set cat_names = {'step':'操作步骤','product':'成品质量','safety':'安全行为'} %}
+  {% for it in items %}
+  <tr>
+    <td>{{ cat_names[it['category']] }}</td>
+    <td>{{ it['name'] }}</td>
+    <td>{{ '%g'|format(it['max_score']) }}</td>
+    <td>{{ '%g'|format(it['score']) }}</td>
+    <td>{{ it['comment'] or '' }}</td>
+  </tr>
+  {% endfor %}
+  <tr class="cat-header">
+    <td colspan="2">总分</td>
+    <td>{{ '%g'|format(result['max_score']) }}</td>
+    <td>{{ '%g'|format(result['total_score']) }}</td>
+    <td><span class="badge {{ 'badge-pass' if result['passed'] else 'badge-fail' }}">
+        {{ '合格' if result['passed'] else '不合格' }}</span></td>
+  </tr>
+</table>
+</div>
+<a class="btn btn-muted" href="{{ url_for('candidate.scores') }}">返回成绩列表</a>
+{% endblock %}

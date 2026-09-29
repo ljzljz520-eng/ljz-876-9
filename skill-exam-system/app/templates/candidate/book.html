@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}预约考试{% endblock %}
+{% block content %}
+<h1>预约实操考试</h1>
+<div class="card">
+  <p class="muted">选择场次后，系统将自动为您分配该工种的<b>工位</b>、<b>考评员</b>，并预留所需<b>耗材</b>。</p>
+</div>
+<div class="card">
+{% if sessions %}
+<table>
+  <tr><th>工种</th><th>考试日期</th><th>时间</th><th>剩余工位</th><th>操作</th></tr>
+  {% for s in sessions %}
+  <tr>
+    <td>{{ s['skill_name'] }}</td>
+    <td>{{ s['exam_date'] }}</td>
+    <td>{{ s['start_time'] }} - {{ s['end_time'] }}</td>
+    <td>{{ s['free_ws'] }}</td>
+    <td>
+      {% if s['free_ws'] > 0 %}
+      <form class="inline-form" method="post"
+            onsubmit="return confirm('确认预约 {{ s['skill_name'] }} {{ s['exam_date'] }} {{ s['start_time'] }} 场次？');">
+        <input type="hidden" name="session_id" value="{{ s['id'] }}">
+        <button class="btn btn-sm">立即预约</button>
+      </form>
+      {% else %}
+      <span class="muted">已约满</span>
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p class="muted">暂无可预约的场次，请稍后再来。</p>
+{% endif %}
+</div>
+{% endblock %}

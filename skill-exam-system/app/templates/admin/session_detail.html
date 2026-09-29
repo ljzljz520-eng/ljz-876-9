@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}场次详情{% endblock %}
+{% block content %}
+<h1>场次详情：{{ sess['skill_name'] }}（{{ sess['exam_date'] }} {{ sess['start_time'] }}-{{ sess['end_time'] }}）</h1>
+<div class="card">
+  <a class="btn btn-success" href="{{ url_for('admin.session_export', session_id=sess['id']) }}">⬇ 导出本场评分表 CSV</a>
+  <form class="inline-form" method="post"
+        action="{{ url_for('admin.session_publish', session_id=sess['id']) }}"
+        onsubmit="return confirm('发布后考生即可查看本人成绩，确认发布？');">
+    <button class="btn">发布本场全部成绩</button>
+  </form>
+  <a class="btn btn-muted" href="{{ url_for('admin.sessions') }}">返回场次列表</a>
+</div>
+<div class="card">
+{% if bookings %}
+<table>
+  <tr><th>预约号</th><th>考生</th><th>身份证号</th><th>工位</th><th>考评员</th>
+      <th>状态</th><th>总分</th><th>结论</th><th>发布</th><th>评分表</th></tr>
+  {% for b in bookings %}
+  <tr>
+    <td>{{ b['booking_no'] }}</td>
+    <td>{{ b['candidate_name'] }}</td>
+    <td>{{ b['id_card'] or '—' }}</td>
+    <td>{{ b['ws_name'] }}</td>
+    <td>{{ b['examiner_name'] }}</td>
+    <td><span class="badge badge-{{ b['status'] }}">
+        {{ {'booked':'已预约','completed':'已评分'}[b['status']] }}</span></td>
+    <td>{{ '%g'|format(b['total_score']) if b['total_score'] is not none else '—' }}</td>
+    <td>{% if b['total_score'] is not none %}
+        <span class="badge {{ 'badge-pass' if b['passed'] else 'badge-fail' }}">
+        {{ '合格' if b['passed'] else '不合格' }}</span>{% endif %}</td>
+    <td>{{ '已发布' if b['published'] else '未发布' }}</td>
+    <td>{% if b['total_score'] is not none %}
+        <a class="btn btn-sm btn-muted"
+           href="{{ url_for('admin.booking_export', booking_id=b['id']) }}">单项评分表</a>
+        {% endif %}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p class="muted">本场次暂无预约。</p>
+{% endif %}
+</div>
+{% endblock %}

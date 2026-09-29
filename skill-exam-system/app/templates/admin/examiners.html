@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}考评员管理{% endblock %}
+{% block content %}
+<h1>考评员管理</h1>
+<div class="card">
+  <h2>新增考评员</h2>
+  <form method="post">
+    <div class="form-row"><label>登录用户名</label><input name="username" required></div>
+    <div class="form-row"><label>初始密码</label><input name="password" required></div>
+    <div class="form-row"><label>姓名</label><input name="real_name" required></div>
+    <div class="form-row"><label>联系电话</label><input name="phone"></div>
+    <div class="form-row"><label>可考评工种</label>
+      {% for s in skills %}
+      <label style="display:inline;font-weight:normal;margin-right:14px;">
+        <input type="checkbox" name="skill_ids" value="{{ s['id'] }}"> {{ s['name'] }}
+      </label>
+      {% endfor %}
+    </div>
+    <div style="margin-top:12px;"><button class="btn">创建考评员</button></div>
+  </form>
+</div>
+<div class="card">
+<table>
+  <tr><th>ID</th><th>用户名</th><th>姓名</th><th>电话</th><th>可考评工种</th></tr>
+  {% for e in rows %}
+  <tr>
+    <td>{{ e['id'] }}</td>
+    <td>{{ e['username'] }}</td>
+    <td>{{ e['real_name'] }}</td>
+    <td>{{ e['phone'] or '—' }}</td>
+    <td>{{ e['skill_names'] or '—' }}</td>
+  </tr>
+  {% endfor %}
+</table>
+</div>
+{% endblock %}

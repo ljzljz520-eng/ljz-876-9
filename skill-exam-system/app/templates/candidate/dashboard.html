@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}我的预约{% endblock %}
+{% block content %}
+<h1>我的预约</h1>
+<div class="card">
+  <a class="btn" href="{{ url_for('candidate.book') }}">＋ 预约实操考试</a>
+  <a class="btn btn-muted" href="{{ url_for('candidate.scores') }}">查看我的成绩</a>
+</div>
+<div class="card">
+{% if bookings %}
+<table>
+  <tr><th>预约号</th><th>工种</th><th>考试时间</th><th>工位</th><th>考评员</th>
+      <th>状态</th><th>成绩</th><th>操作</th></tr>
+  {% for b in bookings %}
+  <tr>
+    <td>{{ b['booking_no'] }}</td>
+    <td>{{ b['skill_name'] }}</td>
+    <td>{{ b['exam_date'] }} {{ b['start_time'] }}-{{ b['end_time'] }}</td>
+    <td>{{ b['ws_name'] }}</td>
+    <td>{{ b['examiner_name'] }}</td>
+    <td><span class="badge badge-{{ b['status'] }}">
+        {{ {'booked':'已预约','completed':'已考完','cancelled':'已取消'}[b['status']] }}</span></td>
+    <td>
+      {% if b['published'] %}
+        <a href="{{ url_for('candidate.score_detail', booking_id=b['id']) }}">
+          {{ '%g'|format(b['total_score']) }} 分
+          {{ '✅合格' if b['passed'] else '❌不合格' }}</a>
+      {% elif b['status'] == 'completed' %}
+        <span class="muted">待发布</span>
+      {% else %}—{% endif %}
+    </td>
+    <td>
+      {% if b['status'] == 'booked' %}
+      <form class="inline-form" method="post"
+            action="{{ url_for('candidate.cancel', booking_id=b['id']) }}"
+            onsubmit="return confirm('确定取消该预约吗？');">
+        <button class="btn btn-sm btn-danger">取消预约</button>
+      </form>
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p class="muted">暂无预约记录，点击上方按钮预约考试。</p>
+{% endif %}
+</div>
+{% endblock %}

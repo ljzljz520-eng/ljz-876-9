@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}登录{% endblock %}
+{% block content %}
+<div class="card" style="max-width:420px;margin:40px auto;">
+  <h1>用户登录</h1>
+  <form method="post">
+    <label>用户名</label>
+    <input name="username" required autofocus>
+    <label>密码</label>
+    <input type="password" name="password" required>
+    <div style="margin-top:18px;">
+      <button class="btn" type="submit">登 录</button>
+      <a href="{{ url_for('auth.register') }}" style="margin-left:12px;">没有账号？考生注册</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

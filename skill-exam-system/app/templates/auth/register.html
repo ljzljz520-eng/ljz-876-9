@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}考生注册{% endblock %}
+{% block content %}
+<div class="card" style="max-width:460px;margin:30px auto;">
+  <h1>考生注册</h1>
+  <form method="post">
+    <label>用户名 *</label>
+    <input name="username" required>
+    <label>密码 *</label>
+    <input type="password" name="password" required>
+    <label>姓名 *</label>
+    <input name="real_name" required>
+    <label>身份证号</label>
+    <input name="id_card" maxlength="18" placeholder="用于成绩表登记">
+    <label>联系电话</label>
+    <input name="phone">
+    <div style="margin-top:18px;">
+      <button class="btn" type="submit">注 册</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

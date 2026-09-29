@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}现场评分{% endblock %}
+{% block content %}
+<h1>现场评分</h1>
+<div class="card">
+  <p><b>考生：</b>{{ b['candidate_name'] }}（{{ b['id_card'] or '未登记身份证' }}）　
+     <b>工种：</b>{{ b['skill_name'] }}　<b>预约号：</b>{{ b['booking_no'] }}<br>
+     <b>考试时间：</b>{{ b['exam_date'] }} {{ b['start_time'] }}　
+     <b>工位：</b>{{ b['ws_name'] }}</p>
+</div>
+<form method="post">
+<div class="card">
+<table>
+  <tr><th style="width:90px;">类别</th><th>评分项目</th><th>评分要点</th>
+      <th style="width:70px;">满分</th><th style="width:110px;">得分</th><th>备注</th></tr>
+  {% for cat in ['step', 'product', 'safety'] %}
+    {% if grouped.get(cat) %}
+    <tr class="cat-header"><td colspan="6">{{ cat_names[cat] }}</td></tr>
+      {% for item in grouped[cat] %}
+      <tr>
+        <td></td>
+        <td>{{ item['name'] }}</td>
+        <td class="muted">{{ item['description'] }}</td>
+        <td>{{ '%g'|format(item['max_score']) }}</td>
+        <td><input class="score-input" type="number" step="0.5" min="0"
+                   max="{{ '%g'|format(item['max_score']) }}"
+                   name="score_{{ item['id'] }}" required
+                   value="{{ '%g'|format(existing[item['id']]['score']) if item['id'] in existing else '' }}"></td>
+        <td><input class="comment-input" name="comment_{{ item['id'] }}"
+                   value="{{ existing[item['id']]['comment'] or '' if item['id'] in existing else '' }}"
+                   placeholder="选填"></td>
+      </tr>
+      {% endfor %}
+    {% endif %}
+  {% endfor %}
+</table>
+<div style="margin-top:16px;">
+  <button class="btn btn-success" type="submit">提交评分</button>
+  <a class="btn btn-muted" href="{{ url_for('examiner.dashboard') }}">返回</a>
+  <span class="muted">　提交后总分自动计算，合格线为满分 60%；成绩经管理员发布后考生方可查看。</span>
+</div>
+</div>
+</form>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}耗材管理{% endblock %}
+{% block content %}
+<h1>耗材管理</h1>
+<div class="card">
+  <h2>新增耗材</h2>
+  <form method="post">
+    <div class="form-row"><label>所属工种</label>
+      <select name="skill_id">
+        {% for s in skills %}<option value="{{ s['id'] }}">{{ s['name'] }}</option>{% endfor %}
+      </select></div>
+    <div class="form-row"><label>耗材名称</label><input name="name" required></div>
+    <div class="form-row"><label>单位</label><input name="unit" value="份"></div>
+    <div class="form-row"><label>初始库存</label><input type="number" name="stock" value="0" min="0"></div>
+    <div class="form-row"><label>每场考试消耗量</label><input type="number" name="qty_per_exam" value="1" min="1"></div>
+    <div style="margin-top:12px;"><button class="btn">添加</button></div>
+  </form>
+</div>
+<div class="card">
+<table>
+  <tr><th>ID</th><th>工种</th><th>耗材</th><th>单位</th><th>库存</th>
+      <th>每场消耗</th><th>可承接场次</th><th>补货</th></tr>
+  {% for c in rows %}
+  <tr>
+    <td>{{ c['id'] }}</td>
+    <td>{{ c['skill_name'] }}</td>
+    <td>{{ c['name'] }}</td>
+    <td>{{ c['unit'] }}</td>
+    <td>{{ c['stock'] }}</td>
+    <td>{{ c['qty_per_exam'] }}</td>
+    <td>{{ c['stock'] // c['qty_per_exam'] }}</td>
+    <td>
+      <form class="inline-form" method="post"
+            action="{{ url_for('admin.consumable_restock', cid=c['id']) }}">
+        <input type="number" name="qty" value="50" min="1">
+        <button class="btn btn-sm">补货</button>
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+</div>
+{% endblock %}

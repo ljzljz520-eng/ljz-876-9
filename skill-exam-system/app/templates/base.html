@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}职业技能实操预约评分系统{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<nav class="navbar">
+  <a class="brand" href="{{ url_for('index') }}">技能实操考核系统</a>
+  <div class="nav-links">
+    {% if g.user %}
+      {% if g.user['role'] == 'candidate' %}
+        <a href="{{ url_for('candidate.dashboard') }}">我的预约</a>
+        <a href="{{ url_for('candidate.book') }}">预约考试</a>
+        <a href="{{ url_for('candidate.scores') }}">我的成绩</a>
+      {% elif g.user['role'] == 'examiner' %}
+        <a href="{{ url_for('examiner.dashboard') }}">考评任务</a>
+      {% elif g.user['role'] == 'admin' %}
+        <a href="{{ url_for('admin.dashboard') }}">总览</a>
+        <a href="{{ url_for('admin.sessions') }}">场次管理</a>
+        <a href="{{ url_for('admin.workstations') }}">工位</a>
+        <a href="{{ url_for('admin.consumables') }}">耗材</a>
+        <a href="{{ url_for('admin.examiners') }}">考评员</a>
+      {% endif %}
+      <span class="user-info">{{ g.user['real_name'] }}
+        （{{ {'candidate':'考生','examiner':'考评员','admin':'管理员'}[g.user['role']] }}）</span>
+      <a href="{{ url_for('auth.logout') }}">退出</a>
+    {% else %}
+      <a href="{{ url_for('auth.login') }}">登录</a>
+      <a href="{{ url_for('auth.register') }}">考生注册</a>
+    {% endif %}
+  </div>
+</nav>
+<main class="container">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, msg in messages %}
+      <div class="flash flash-{{ category }}">{{ msg }}</div>
+    {% endfor %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</main>
+</body>
+</html>

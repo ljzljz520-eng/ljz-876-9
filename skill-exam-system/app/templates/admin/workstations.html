@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}工位管理{% endblock %}
+{% block content %}
+<h1>工位管理</h1>
+<div class="card">
+  <h2>新增工位</h2>
+  <form method="post">
+    <div class="form-row"><label>所属工种</label>
+      <select name="skill_id">
+        {% for s in skills %}<option value="{{ s['id'] }}">{{ s['name'] }}</option>{% endfor %}
+      </select></div>
+    <div class="form-row"><label>工位名称</label><input name="name" required></div>
+    <div class="form-row"><label>位置</label><input name="location"></div>
+    <div style="margin-top:12px;"><button class="btn">添加</button></div>
+  </form>
+</div>
+<div class="card">
+<table>
+  <tr><th>ID</th><th>工种</th><th>工位</th><th>位置</th><th>状态</th><th>操作</th></tr>
+  {% for w in rows %}
+  <tr>
+    <td>{{ w['id'] }}</td>
+    <td>{{ w['skill_name'] }}</td>
+    <td>{{ w['name'] }}</td>
+    <td>{{ w['location'] }}</td>
+    <td><span class="badge badge-{{ w['status'] }}">
+        {{ '可用' if w['status'] == 'available' else '维护中' }}</span></td>
+    <td>
+      <form class="inline-form" method="post"
+            action="{{ url_for('admin.workstation_toggle', ws_id=w['id']) }}">
+        <button class="btn btn-sm btn-muted">
+          {{ '设为维护' if w['status'] == 'available' else '恢复可用' }}</button>
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+</div>
+{% endblock %}

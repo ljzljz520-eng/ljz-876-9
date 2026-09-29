@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}我的成绩{% endblock %}
+{% block content %}
+<h1>我的成绩</h1>
+<div class="card">
+{% if rows %}
+<table>
+  <tr><th>预约号</th><th>工种</th><th>考试日期</th><th>总分</th><th>满分</th>
+      <th>结论</th><th>明细</th></tr>
+  {% for r in rows %}
+  <tr>
+    <td>{{ r['booking_no'] }}</td>
+    <td>{{ r['skill_name'] }}</td>
+    <td>{{ r['exam_date'] }} {{ r['start_time'] }}</td>
+    <td>{{ '%g'|format(r['total_score']) }}</td>
+    <td>{{ '%g'|format(r['max_score']) }}</td>
+    <td><span class="badge {{ 'badge-pass' if r['passed'] else 'badge-fail' }}">
+        {{ '合格' if r['passed'] else '不合格' }}</span></td>
+    <td><a href="{{ url_for('candidate.score_detail', booking_id=r['id']) }}">查看明细</a></td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p class="muted">暂无已发布的成绩。成绩由管理员在考试结束后统一发布。</p>
+{% endif %}
+</div>
+{% endblock %}

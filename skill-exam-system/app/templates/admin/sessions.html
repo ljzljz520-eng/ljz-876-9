@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}场次管理{% endblock %}
+{% block content %}
+<h1>考试场次管理</h1>
+<div class="card">
+  <h2>新建场次</h2>
+  <form method="post" action="{{ url_for('admin.session_create') }}">
+    <div class="form-row">
+      <label>工种</label>
+      <select name="skill_id">
+        {% for s in skills %}<option value="{{ s['id'] }}">{{ s['name'] }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="form-row"><label>考试日期</label><input type="date" name="exam_date" required></div>
+    <div class="form-row"><label>开始时间</label><input type="time" name="start_time" required></div>
+    <div class="form-row"><label>结束时间</label><input type="time" name="end_time" required></div>
+    <div style="margin-top:12px;"><button class="btn">创建场次</button></div>
+  </form>
+</div>
+<div class="card">
+<table>
+  <tr><th>ID</th><th>工种</th><th>日期</th><th>时间</th><th>状态</th>
+      <th>预约数</th><th>已发布</th><th>操作</th></tr>
+  {% for r in rows %}
+  <tr>
+    <td>{{ r['id'] }}</td>
+    <td>{{ r['skill_name'] }}</td>
+    <td>{{ r['exam_date'] }}</td>
+    <td>{{ r['start_time'] }}-{{ r['end_time'] }}</td>
+    <td><span class="badge badge-{{ r['status'] }}">
+        {{ {'open':'开放预约','closed':'停止预约','finished':'已结束'}[r['status']] }}</span></td>
+    <td>{{ r['n_booked'] }}</td>
+    <td>{{ r['n_published'] }}</td>
+    <td>
+      <a class="btn btn-sm" href="{{ url_for('admin.session_detail', session_id=r['id']) }}">详情/成绩</a>
+      {% if r['status'] == 'open' %}
+      <form class="inline-form" method="post" action="{{ url_for('admin.session_status', session_id=r['id']) }}">
+        <input type="hidden" name="status" value="closed">
+        <button class="btn btn-sm btn-muted">停止预约</button>
+      </form>
+      {% elif r['status'] == 'closed' %}
+      <form class="inline-form" method="post" action="{{ url_for('admin.session_status', session_id=r['id']) }}">
+        <input type="hidden" name="status" value="finished">
+        <button class="btn btn-sm btn-success">标记结束</button>
+      </form>
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+</div>
+{% endblock %}
