@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>实操考核评分表 - {{ booking.booking_no }}</title>
+    <style>
+        body { font-family: "SimSun", "Songti SC", serif; max-width: 800px; margin: 20px auto; color: #000; }
+        h1 { text-align: center; font-size: 22px; margin-bottom: 4px; }
+        .sub { text-align: center; color: #555; margin-bottom: 16px; }
+        table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+        th, td { border: 1px solid #333; padding: 8px 10px; font-size: 14px; }
+        th { background: #f0f0f0; }
+        .info td { border: 1px solid #333; }
+        .cat { background: #fafafa; font-weight: bold; }
+        .total-row td { font-weight: bold; font-size: 16px; }
+        .sign { display: flex; justify-content: space-between; margin-top: 40px; }
+        .sign div { width: 45%; border-top: 1px solid #333; padding-top: 6px; text-align: center; }
+        .no-print { text-align: center; margin: 16px; }
+        @media print { .no-print { display: none; } }
+    </style>
+</head>
+<body>
+<div class="no-print">
+    <button onclick="window.print()">🖨 打印</button>
+    <button onclick="window.close()">关闭</button>
+</div>
+<h1>职业技能实操考核评分表</h1>
+<p class="sub">准考证号：{{ booking.booking_no }}</p>
+<table class="info">
+    <tr>
+        <td><strong>考生姓名：</strong>{{ booking.candidate.name }}</td>
+        <td><strong>考核工种：</strong>{{ booking.slot.skill.name }}</td>
+    </tr>
+    <tr>
+        <td><strong>考试时间：</strong>{{ booking.slot.start_time.strftime('%Y年%m月%d日 %H:%M') }}</td>
+        <td><strong>工位：</strong>{{ booking.workstation.name if booking.workstation else '' }}</td>
+    </tr>
+</table>
+
+<table>
+    <thead>
+        <tr><th style="width:15%">类别</th><th>评分项目</th><th style="width:10%">满分</th>
+            <th style="width:10%">得分</th><th style="width:25%">备注</th></tr>
+    </thead>
+    <tbody>
+        {% set ns = namespace(cur='') %}
+        {% for item in items %}
+        {% set s = score_map.get(item.id) %}
+        <tr>
+            {% if item.category != ns.cur_cat %}
+            {% set ns.cur_cat = item.category %}
+            <td class="cat">{{ categories[item.category] }}</td>
+            {% else %}<td></td>{% endif %}
+            <td>{{ item.name }}</td>
+            <td style="text-align:center">{{ '%g'|format(item.max_score) }}</td>
+            <td style="text-align:center"><strong>{{ '%g'|format(s.score) if s else '' }}</strong></td>
+            <td>{{ s.comment if s and s.comment else '' }}</td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <td class="cat" colspan="2">分类小计</td>
+            <td colspan="3">
+                操作步骤：{{ '%g'|format(booking.category_subtotal('step')) }} 分 ｜
+                成品质量：{{ '%g'|format(booking.category_subtotal('product')) }} 分 ｜
+                安全行为：{{ '%g'|format(booking.category_subtotal('safety')) }} 分
+            </td>
+        </tr>
+        <tr class="total-row">
+            <td colspan="2">总分</td>
+            <td colspan="3">{{ '%g'|format(booking.total_score) }} 分</td>
+        </tr>
+    </tbody>
+</table>
+
+<table>
+    <tr><td><strong>考评员评语：</strong>{{ booking.examiner_comment or '无' }}</td></tr>
+</table>
+
+<div class="sign">
+    <div>考评员签字：{{ booking.examiner.name if booking.examiner else '' }}</div>
+    <div>日期：{{ booking.scored_at.strftime('%Y年%m月%d日') if booking.scored_at else '' }}</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}现场评分{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h2>现场评分</h2>
+    <a href="{{ url_for('examiner.dashboard') }}" class="btn btn-outline">← 返回</a>
+</div>
+
+<div class="info-panel">
+    <div><strong>考生：</strong>{{ booking.candidate.name }}</div>
+    <div><strong>工种：</strong>{{ booking.slot.skill.name }}</div>
+    <div><strong>准考证号：</strong>{{ booking.booking_no }}</div>
+    <div><strong>工位：</strong>{{ booking.workstation.name if booking.workstation else '-' }}</div>
+    <div><strong>考试时间：</strong>{{ booking.slot.start_time.strftime('%Y-%m-%d %H:%M') }}</div>
+</div>
+
+<form method="post" id="scoreForm">
+    {% set ns = namespace(cur_cat='') %}
+    {% for item in items %}
+        {% if item.category != ns.cur_cat %}
+            {% if ns.cur_cat != '' %}</table></div>{% endif %}
+            {% set ns.cur_cat = item.category %}
+            <div class="rubric-section">
+            <h3 class="rubric-title rubric-{{ item.category }}">
+                {{ {'step':'📋 操作步骤','product':'🏆 成品质量','safety':'🦺 安全行为'}[item.category] }}
+            </h3>
+            <table class="table rubric-table">
+                <thead><tr><th>评分项</th><th>满分</th><th>得分</th><th>备注</th></tr></thead>
+                <tbody>
+        {% endif %}
+        {% set s = score_map.get(item.id) %}
+        <tr>
+            <td>{{ item.name }}</td>
+            <td>{{ '%g'|format(item.max_score) }}</td>
+            <td>
+                <input type="number" name="item_{{ item.id }}" min="0" max="{{ '%g'|format(item.max_score) }}"
+                       step="0.5" required class="score-input"
+                       value="{{ '%g'|format(s.score) if s else '' }}">
+            </td>
+            <td><input type="text" name="comment_{{ item.id }}" class="comment-input"
+                       placeholder="扣分说明（选填）" value="{{ s.comment if s and s.comment else '' }}"></td>
+        </tr>
+    {% endfor %}
+    {% if items %}</tbody></table></div>{% endif %}
+
+    <div class="form-group">
+        <label><strong>总评语</strong></label>
+        <textarea name="examiner_comment" rows="3" class="full-textarea"
+                  placeholder="对考生整体表现的评价">{{ booking.examiner_comment or '' }}</textarea>
+    </div>
+
+    <div class="score-summary">
+        当前合计：<span id="liveTotal" class="score-total">0</span> 分
+        （满分 {{ items | sum(attribute='max_score') | round(1) }}）
+    </div>
+    <button type="submit" class="btn btn-primary btn-lg">提交评分</button>
+</form>
+
+<script>
+// 实时合计分数
+const inputs = document.querySelectorAll('.score-input');
+function updateTotal() {
+    let t = 0;
+    inputs.forEach(i => { const v = parseFloat(i.value); if (!isNaN(v)) t += v; });
+    document.getElementById('liveTotal').textContent = Math.round(t * 10) / 10;
+}
+inputs.forEach(i => i.addEventListener('input', updateTotal));
+updateTotal();
+</script>
+{% endblock %}

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}职业技能实操预约评分系统{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<nav class="navbar">
+    <div class="nav-brand">🎓 职业技能实操考核平台</div>
+    <div class="nav-links">
+        {% if current_user.is_authenticated %}
+            {% if current_user.role == 'candidate' %}
+                <a href="{{ url_for('candidate.dashboard') }}">我的预约</a>
+                <a href="{{ url_for('candidate.book') }}">预约考试</a>
+                <a href="{{ url_for('candidate.my_scores') }}">我的成绩</a>
+            {% elif current_user.role == 'examiner' %}
+                <a href="{{ url_for('examiner.dashboard') }}">考评任务</a>
+            {% elif current_user.role == 'admin' %}
+                <a href="{{ url_for('admin.dashboard') }}">总览</a>
+                <a href="{{ url_for('admin.slots') }}">场次</a>
+                <a href="{{ url_for('admin.workstations') }}">工位</a>
+                <a href="{{ url_for('admin.consumables') }}">耗材</a>
+                <a href="{{ url_for('admin.examiners') }}">考评员</a>
+                <a href="{{ url_for('admin.bookings') }}">预约与成绩</a>
+            {% endif %}
+            <span class="nav-user">{{ current_user.name }}（{{ {'candidate':'考生','examiner':'考评员','admin':'管理员'}[current_user.role] }}）</span>
+            <a href="{{ url_for('auth.logout') }}" class="nav-logout">退出</a>
+        {% endif %}
+    </div>
+</nav>
+
+<main class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="footer">职业技能实操预约评分系统 &copy; 2026</footer>
+</body>
+</html>

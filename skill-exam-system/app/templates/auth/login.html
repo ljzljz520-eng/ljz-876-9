@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}登录 - 职业技能实操预约评分系统{% endblock %}
+{% block content %}
+<div class="auth-card">
+    <h2>用户登录</h2>
+    <form method="post">
+        <div class="form-group">
+            <label>用户名</label>
+            <input type="text" name="username" required autofocus>
+        </div>
+        <div class="form-group">
+            <label>密码</label>
+            <input type="password" name="password" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">登 录</button>
+    </form>
+    <p class="auth-tip">还没有账号？<a href="{{ url_for('auth.register') }}">考生注册</a></p>
+</div>
+{% endblock %}

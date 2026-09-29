@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}工位管理{% endblock %}
+{% block content %}
+<h2>工位管理</h2>
+<div class="card">
+    <h3>添加工位</h3>
+    <form method="post" class="form-inline">
+        <select name="skill_id" required>
+            <option value="">选择工种</option>
+            {% for s in skills %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}
+        </select>
+        <input type="text" name="name" placeholder="工位名称" required>
+        <input type="text" name="location" placeholder="位置">
+        <button class="btn btn-primary">添加</button>
+    </form>
+</div>
+<table class="table">
+    <thead><tr><th>ID</th><th>工种</th><th>工位</th><th>位置</th><th>状态</th><th>操作</th></tr></thead>
+    <tbody>
+        {% for w in items %}
+        <tr>
+            <td>{{ w.id }}</td>
+            <td><span class="tag">{{ w.skill.name }}</span></td>
+            <td>{{ w.name }}</td>
+            <td>{{ w.location }}</td>
+            <td>{% if w.active %}<span class="badge badge-success">启用</span>
+                {% else %}<span class="badge badge-muted">停用</span>{% endif %}</td>
+            <td>
+                <form method="post" action="{{ url_for('admin.toggle_workstation', ws_id=w.id) }}" class="inline-form">
+                    <button class="btn btn-sm btn-outline">{{ '停用' if w.active else '启用' }}</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

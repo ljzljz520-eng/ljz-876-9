@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}考生注册{% endblock %}
+{% block content %}
+<div class="auth-card">
+    <h2>考生注册</h2>
+    <form method="post">
+        <div class="form-group">
+            <label>用户名 *</label>
+            <input type="text" name="username" required>
+        </div>
+        <div class="form-group">
+            <label>姓名 *</label>
+            <input type="text" name="name" required>
+        </div>
+        <div class="form-group">
+            <label>手机号</label>
+            <input type="text" name="phone">
+        </div>
+        <div class="form-group">
+            <label>密码 *（至少6位）</label>
+            <input type="password" name="password" required minlength="6">
+        </div>
+        <div class="form-group">
+            <label>确认密码 *</label>
+            <input type="password" name="password2" required minlength="6">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">注 册</button>
+    </form>
+    <p class="auth-tip">已有账号？<a href="{{ url_for('auth.login') }}">直接登录</a></p>
+</div>
+{% endblock %}

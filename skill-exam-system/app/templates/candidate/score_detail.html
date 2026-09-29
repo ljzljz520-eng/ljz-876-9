@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}成绩详情{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h2>成绩详情</h2>
+    <a href="{{ url_for('candidate.my_scores') }}" class="btn btn-outline">← 返回</a>
+</div>
+
+<div class="info-panel">
+    <div><strong>工种：</strong>{{ booking.slot.skill.name }}</div>
+    <div><strong>准考证号：</strong>{{ booking.booking_no }}</div>
+    <div><strong>考试时间：</strong>{{ booking.slot.start_time.strftime('%Y-%m-%d %H:%M') }}</div>
+    <div><strong>总分：</strong><span class="score-total">{{ '%g'|format(booking.total_score) }}</span> 分</div>
+</div>
+
+{% set ns = namespace(cur_cat='') %}
+<table class="table">
+    <thead><tr><th>类别</th><th>评分项</th><th>满分</th><th>得分</th><th>备注</th></tr></thead>
+    <tbody>
+        {% for item in items %}
+        {% set s = score_map.get(item.id) %}
+        <tr>
+            <td>{% if item.category != ns.cur_cat %}
+                <span class="tag">{{ {'step':'操作步骤','product':'成品质量','safety':'安全行为'}[item.category] }}</span>
+                {% set ns.cur_cat = item.category %}{% endif %}</td>
+            <td>{{ item.name }}</td>
+            <td>{{ '%g'|format(item.max_score) }}</td>
+            <td><strong>{{ '%g'|format(s.score) if s else '-' }}</strong></td>
+            <td>{{ s.comment if s and s.comment else '' }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr><td colspan="3"><strong>合计</strong></td>
+            <td colspan="2"><strong class="score-total">{{ '%g'|format(booking.total_score) }}</strong> 分</td></tr>
+    </tfoot>
+</table>
+
+{% if booking.examiner_comment %}
+<div class="comment-box"><strong>考评员评语：</strong>{{ booking.examiner_comment }}</div>
+{% endif %}
+{% endblock %}

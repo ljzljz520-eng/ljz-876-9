@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}考评任务{% endblock %}
+{% block content %}
+<h2>我的考评任务</h2>
+<p class="text-muted">以下为您负责的实操考核安排。</p>
+
+{% if bookings %}
+<table class="table">
+    <thead>
+        <tr><th>考试时间</th><th>工种</th><th>考生</th><th>工位</th><th>准考证号</th><th>状态</th><th>操作</th></tr>
+    </thead>
+    <tbody>
+        {% for b in bookings %}
+        <tr>
+            <td>{{ b.slot.start_time.strftime('%Y-%m-%d %H:%M') }}</td>
+            <td><span class="tag">{{ b.slot.skill.name }}</span></td>
+            <td>{{ b.candidate.name }}</td>
+            <td>{{ b.workstation.name if b.workstation else '-' }}</td>
+            <td><code>{{ b.booking_no }}</code></td>
+            <td>
+                {% if b.status == 'booked' %}<span class="badge badge-info">待评分</span>
+                {% elif b.status == 'scored' %}<span class="badge badge-success">已评分 {{ '%g'|format(b.total_score) }}分</span>
+                {% elif b.status == 'absent' %}<span class="badge badge-danger">缺考</span>{% endif %}
+            </td>
+            <td>
+                {% if b.status == 'booked' %}
+                <a href="{{ url_for('examiner.score', booking_id=b.id) }}" class="btn btn-sm btn-primary">评分</a>
+                <form method="post" action="{{ url_for('examiner.mark_absent', booking_id=b.id) }}"
+                      class="inline-form" onsubmit="return confirm('确认该考生缺考？')">
+                    <button class="btn btn-sm btn-outline">缺考</button>
+                </form>
+                {% elif b.status == 'scored' %}
+                <a href="{{ url_for('examiner.score', booking_id=b.id) }}" class="btn btn-sm btn-outline">修改评分</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div class="empty-state"><p>暂无考评任务</p></div>
+{% endif %}
+{% endblock %}

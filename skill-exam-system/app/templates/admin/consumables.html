@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}耗材管理{% endblock %}
+{% block content %}
+<h2>耗材管理</h2>
+<div class="card">
+    <h3>添加耗材</h3>
+    <form method="post" class="form-inline">
+        <select name="skill_id" required>
+            <option value="">选择工种</option>
+            {% for s in skills %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}
+        </select>
+        <input type="text" name="name" placeholder="耗材名称" required>
+        <input type="text" name="unit" placeholder="单位(如:根/套)" required>
+        <input type="number" name="stock" placeholder="初始库存" step="0.5" min="0" required>
+        <input type="number" name="per_exam" placeholder="每场用量" step="0.5" min="0.5" required>
+        <button class="btn btn-primary">添加</button>
+    </form>
+</div>
+<table class="table">
+    <thead><tr><th>工种</th><th>耗材</th><th>库存</th><th>每场用量</th><th>可支撑场次</th><th>入库</th></tr></thead>
+    <tbody>
+        {% for c in items %}
+        <tr class="{{ 'row-warning' if c.stock < c.per_exam * 3 }}">
+            <td><span class="tag">{{ c.skill.name }}</span></td>
+            <td>{{ c.name }}</td>
+            <td><strong>{{ '%g'|format(c.stock) }}</strong> {{ c.unit }}</td>
+            <td>{{ '%g'|format(c.per_exam) }} {{ c.unit }}</td>
+            <td>{{ (c.stock / c.per_exam) | int if c.per_exam else '∞' }} 场</td>
+            <td>
+                <form method="post" action="{{ url_for('admin.restock', cid=c.id) }}" class="form-inline">
+                    <input type="number" name="quantity" step="0.5" min="0.5" placeholder="数量" required class="input-sm">
+                    <button class="btn btn-sm btn-primary">入库</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

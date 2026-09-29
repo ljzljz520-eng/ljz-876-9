@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}我的预约{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h2>我的预约</h2>
+    <a href="{{ url_for('candidate.book') }}" class="btn btn-primary">+ 预约考试</a>
+</div>
+
+{% if bookings %}
+<table class="table">
+    <thead>
+        <tr>
+            <th>准考证号</th><th>工种</th><th>考试时间</th><th>工位</th>
+            <th>考评员</th><th>状态</th><th>成绩</th><th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for b in bookings %}
+        <tr>
+            <td><code>{{ b.booking_no }}</code></td>
+            <td><span class="tag">{{ b.slot.skill.name }}</span></td>
+            <td>{{ b.slot.start_time.strftime('%Y-%m-%d %H:%M') }}</td>
+            <td>{{ b.workstation.name if b.workstation else '-' }}</td>
+            <td>{{ b.examiner.name if b.examiner else '-' }}</td>
+            <td>
+                {% if b.status == 'booked' %}<span class="badge badge-info">已预约</span>
+                {% elif b.status == 'scored' %}<span class="badge badge-success">已评分</span>
+                {% elif b.status == 'cancelled' %}<span class="badge badge-muted">已取消</span>
+                {% elif b.status == 'absent' %}<span class="badge badge-danger">缺考</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if b.status == 'scored' %}
+                    <a href="{{ url_for('candidate.score_detail', booking_id=b.id) }}" class="score-link">{{ '%g'|format(b.total_score) }} 分</a>
+                {% else %}-{% endif %}
+            </td>
+            <td>
+                {% if b.status == 'booked' %}
+                <form method="post" action="{{ url_for('candidate.cancel', booking_id=b.id) }}"
+                      onsubmit="return confirm('确定取消该预约吗？耗材将回补库存。')" class="inline-form">
+                    <button class="btn btn-sm btn-danger">取消预约</button>
+                </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div class="empty-state">
+    <p>您还没有预约记录</p>
+    <a href="{{ url_for('candidate.book') }}" class="btn btn-primary">立即预约</a>
+</div>
+{% endif %}
+{% endblock %}

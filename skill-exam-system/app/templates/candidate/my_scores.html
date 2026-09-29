@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}我的成绩{% endblock %}
+{% block content %}
+<h2>我的成绩</h2>
+<p class="text-muted">此处仅显示您本人的考试成绩。</p>
+
+{% if bookings %}
+<div class="score-cards">
+    {% for b in bookings %}
+    <div class="score-card">
+        <div class="score-card-head">
+            <span class="tag tag-lg">{{ b.slot.skill.name }}</span>
+            <span class="score-total">{{ '%g'|format(b.total_score) }}<small> 分</small></span>
+        </div>
+        <div class="score-card-body">
+            <p>考试时间：{{ b.slot.start_time.strftime('%Y-%m-%d %H:%M') }}</p>
+            <p>准考证号：{{ b.booking_no }}</p>
+            <div class="subtotal-row">
+                <span>步骤 {{ '%g'|format(b.category_subtotal('step')) }}</span>
+                <span>成品 {{ '%g'|format(b.category_subtotal('product')) }}</span>
+                <span>安全 {{ '%g'|format(b.category_subtotal('safety')) }}</span>
+            </div>
+        </div>
+        <a href="{{ url_for('candidate.score_detail', booking_id=b.id) }}" class="btn btn-sm btn-outline">查看评分明细</a>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state"><p>暂无已公布的成绩</p></div>
+{% endif %}
+{% endblock %}

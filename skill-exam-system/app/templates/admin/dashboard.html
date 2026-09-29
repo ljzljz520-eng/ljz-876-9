@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}管理总览{% endblock %}
+{% block content %}
+<h2>管理总览</h2>
+<div class="stat-grid">
+    <div class="stat-card"><div class="stat-num">{{ stats.skills }}</div><div>考核工种</div></div>
+    <div class="stat-card"><div class="stat-num">{{ stats.workstations }}</div><div>可用工位</div></div>
+    <div class="stat-card"><div class="stat-num">{{ stats.examiners }}</div><div>考评员</div></div>
+    <div class="stat-card"><div class="stat-num">{{ stats.candidates }}</div><div>注册考生</div></div>
+    <div class="stat-card"><div class="stat-num">{{ stats.slots_open }}</div><div>开放场次</div></div>
+    <div class="stat-card"><div class="stat-num">{{ stats.bookings }}</div><div>有效预约</div></div>
+    <div class="stat-card"><div class="stat-num">{{ stats.scored }}</div><div>已评分</div></div>
+</div>
+
+{% if low_stock %}
+<div class="flash flash-warning">
+    <strong>⚠️ 耗材库存预警：</strong>
+    {% for c in low_stock %}
+        「{{ c.name }}」仅剩 {{ '%g'|format(c.stock) }}{{ c.unit }}（每场需 {{ '%g'|format(c.per_exam) }}{{ c.unit }}）{% if not loop.last %}；{% endif %}
+    {% endfor %}
+    <a href="{{ url_for('admin.consumables') }}">去补充 →</a>
+</div>
+{% endif %}
+
+<div class="quick-links">
+    <a href="{{ url_for('admin.slots') }}" class="btn btn-primary">管理场次</a>
+    <a href="{{ url_for('admin.bookings') }}" class="btn btn-outline">预约与成绩</a>
+    <a href="{{ url_for('admin.export_scores') }}" class="btn btn-outline">导出全部评分表</a>
+</div>
+{% endblock %}

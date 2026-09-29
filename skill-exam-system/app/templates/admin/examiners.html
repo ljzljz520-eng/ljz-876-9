@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}考评员管理{% endblock %}
+{% block content %}
+<h2>考评员管理</h2>
+<div class="card">
+    <h3>创建考评员账号</h3>
+    <form method="post" class="form-inline">
+        <input type="text" name="username" placeholder="登录用户名" required>
+        <input type="text" name="name" placeholder="姓名" required>
+        <input type="password" name="password" placeholder="初始密码" required minlength="6">
+        <select name="skill_id" required>
+            <option value="">可评工种</option>
+            {% for s in skills %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}
+        </select>
+        <button class="btn btn-primary">创建</button>
+    </form>
+</div>
+<table class="table">
+    <thead><tr><th>用户名</th><th>姓名</th><th>可评工种</th><th>创建时间</th></tr></thead>
+    <tbody>
+        {% for u in items %}
+        <tr>
+            <td><code>{{ u.username }}</code></td>
+            <td>{{ u.name }}</td>
+            <td><span class="tag">{{ u.skill.name if u.skill else '-' }}</span></td>
+            <td>{{ u.created_at.strftime('%Y-%m-%d') }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

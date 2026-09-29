@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}场次管理{% endblock %}
+{% block content %}
+<h2>场次管理</h2>
+<div class="card">
+    <h3>创建场次</h3>
+    <form method="post" class="form-inline">
+        <select name="skill_id" required>
+            <option value="">选择工种</option>
+            {% for s in skills %}<option value="{{ s.id }}">{{ s.name }}</option>{% endfor %}
+        </select>
+        <label>开始 <input type="datetime-local" name="start_time" required></label>
+        <label>结束 <input type="datetime-local" name="end_time" required></label>
+        <input type="number" name="capacity" placeholder="容量" min="1" max="20" value="4" required>
+        <button class="btn btn-primary">创建</button>
+    </form>
+</div>
+<table class="table">
+    <thead><tr><th>工种</th><th>开始时间</th><th>结束时间</th><th>容量</th><th>已约</th><th>状态</th><th>操作</th></tr></thead>
+    <tbody>
+        {% for s in items %}
+        <tr>
+            <td><span class="tag">{{ s.skill.name }}</span></td>
+            <td>{{ s.start_time.strftime('%Y-%m-%d %H:%M') }}</td>
+            <td>{{ s.end_time.strftime('%H:%M') }}</td>
+            <td>{{ s.capacity }}</td>
+            <td>{{ s.active_bookings() | length }}</td>
+            <td>{% if s.status == 'open' %}<span class="badge badge-success">开放</span>
+                {% else %}<span class="badge badge-muted">关闭</span>{% endif %}</td>
+            <td>
+                <form method="post" action="{{ url_for('admin.toggle_slot', slot_id=s.id) }}" class="inline-form">
+                    <button class="btn btn-sm btn-outline">{{ '关闭' if s.status == 'open' else '开放' }}</button>
+                </form>
+                <a href="{{ url_for('admin.bookings', slot_id=s.id) }}" class="btn btn-sm btn-outline">预约详情</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
